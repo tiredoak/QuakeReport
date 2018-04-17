@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.sql.Time;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,8 @@ public class EarthquakeAdapter extends ArrayAdapter {
         Earthquake currentEarthquake = (Earthquake) getItem(position);
 
         TextView magTextView = (TextView) listItemView.findViewById(R.id.mag_text_view);
-        magTextView.setText(String.valueOf(currentEarthquake.getmMag()));
+        String mag = formatMagnitude(currentEarthquake.getmMag());
+        magTextView.setText(mag);
 
         // Split location String into two separate strings, one for location offset and one
         // for the primary location
@@ -79,17 +81,20 @@ public class EarthquakeAdapter extends ArrayAdapter {
             return "Near the";
         } else {
             // The string has more detailed information
-            Log.v("getLocationOffset", raw.substring(0, raw.indexOf("of") + 2));
             return raw.substring(0, raw.indexOf("of") + 2);
         }
     }
 
     private String getPrimaryLocation(String raw) {
-        Log.v("getPrimaryLocation", raw.substring(raw.indexOf("of") + 3, raw.length()));
         if (!raw.contains("km")) {
             return raw;
         } else {
             return raw.substring(raw.indexOf("of") + 3, raw.length());
         }
+    }
+
+    private String formatMagnitude(double mag) {
+        DecimalFormat decimalFormatter = new DecimalFormat("0.0");
+        return decimalFormatter.format(mag);
     }
 }
