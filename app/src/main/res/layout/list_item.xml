@@ -4,19 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="80dp"
     android:paddingLeft="16dp"
     android:paddingTop="20dp"
     android:paddingBottom="20dp">
 
     <TextView
         android:id="@+id/mag_text_view"
-        style="@style/material_list"
-        tools:text="2.5" />
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/magnitude_circle"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tools:text="8.9" />
 
     <TextView
         android:id="@+id/location_offset_text_view"
         style="@style/material_list"
+        android:layout_marginLeft="16dp"
         tools:text="88km N of"/>
 
     <TextView
