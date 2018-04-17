@@ -57,11 +57,7 @@ public final class QueryUtils {
 
                 double mag = singleEarthquakeProperties.getDouble("mag");
                 String city = singleEarthquakeProperties.getString("place");
-                long timeInMilliseconds = singleEarthquakeProperties.getLong("time");
-                // Convert date from UNIX time to human-readable format
-                Date dateObject = new Date(timeInMilliseconds);
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
-                String date = dateFormatter.format(dateObject);
+                long date = singleEarthquakeProperties.getLong("time");
 
                 Earthquake earthquake = new Earthquake(mag, city, date);
                 earthquakes.add(earthquake);
