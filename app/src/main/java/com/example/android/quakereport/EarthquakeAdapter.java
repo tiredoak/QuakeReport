@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,17 @@ public class EarthquakeAdapter extends ArrayAdapter {
         TextView magTextView = (TextView) listItemView.findViewById(R.id.mag_text_view);
         magTextView.setText(String.valueOf(currentEarthquake.getmMag()));
 
-        TextView cityTextView = (TextView) listItemView.findViewById(R.id.city_text_view);
-        cityTextView.setText(currentEarthquake.getmCity());
+        // Split location String into two separate strings, one for location offset and one
+        // for the primary location
+        String rawString = currentEarthquake.getmCity();
+        String locationOffset = getLocationOffset(rawString);
+        String primaryLocation = getPrimaryLocation(rawString);
+
+        TextView locationOffsetTextView = (TextView) listItemView.findViewById(R.id.location_offset_text_view);
+        locationOffsetTextView.setText(locationOffset);
+
+        TextView primaryLocationTextView = (TextView) listItemView.findViewById(R.id.primary_location_text_view);
+        primaryLocationTextView.setText(primaryLocation);
 
         Date dateObject = new Date(currentEarthquake.getmDate());
 
@@ -60,5 +70,26 @@ public class EarthquakeAdapter extends ArrayAdapter {
     private String formatTime(Date date) {
         SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");
         return timeFormatter.format(date);
+    }
+
+    private String getLocationOffset(String raw) {
+        // Check string format type.
+        // If no km from a specific location is provided, return "near the"
+        if (!raw.contains("km")) {
+            return "Near the";
+        } else {
+            // The string has more detailed information
+            Log.v("getLocationOffset", raw.substring(0, raw.indexOf("of") + 2));
+            return raw.substring(0, raw.indexOf("of") + 2);
+        }
+    }
+
+    private String getPrimaryLocation(String raw) {
+        Log.v("getPrimaryLocation", raw.substring(raw.indexOf("of") + 3, raw.length()));
+        if (!raw.contains("km")) {
+            return raw;
+        } else {
+            return raw.substring(raw.indexOf("of") + 3, raw.length());
+        }
     }
 }
