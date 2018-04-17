@@ -58,8 +58,9 @@ public final class QueryUtils {
                 double mag = singleEarthquakeProperties.getDouble("mag");
                 String city = singleEarthquakeProperties.getString("place");
                 long date = singleEarthquakeProperties.getLong("time");
+                String url = singleEarthquakeProperties.getString("url");
 
-                Earthquake earthquake = new Earthquake(mag, city, date);
+                Earthquake earthquake = new Earthquake(mag, city, date, url);
                 earthquakes.add(earthquake);
             }
 
