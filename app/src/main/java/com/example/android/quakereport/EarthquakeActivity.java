@@ -21,13 +21,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
@@ -93,10 +96,49 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         private String makeHttpRequest(URL url) throws IOException {
             // Setup the jsonResponse, urlConnection, inputStream
-            // Try to establish the connection
-            // If successful, get the input stream
-            // Convert input stream into a String
-            // Close the connection
+            String jsonResponse = "";
+            HttpURLConnection urlConnection = null;
+            InputStream inputStream = null;
+            // Check if URL exists before anything else
+            if (url == null) {
+                return jsonResponse;
+            }
+            // Connection code
+            // Set up the request object
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setReadTimeout(10000); // milliseconds
+            urlConnection.setConnectTimeout(15000); // milliseconds
+            try {
+                // And attempt the connection
+                urlConnection.connect();
+                // If successful, get the input stream
+                switch (urlConnection.getResponseCode()) {
+                    case 200:
+                        Log.v(LOG_TAG, "200 response from server");
+                        // get the input stream
+                        inputStream = urlConnection.getInputStream();
+                        // convert the stream of bytes to a String
+                        jsonResponse = readFromStream(inputStream);
+                        break;
+                    case 404:
+                        Log.v(LOG_TAG, "404 response from server");
+                        break;
+                    default:
+                        jsonResponse = "";
+                        break;
+                }
+            } catch (IOException) {
+                Log.v(LOG_TAG, "Failure to establish the connection");
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            }
+            return jsonResponse;
         }
 
         private String readFromStream(InputStream inputStream) throws IOException {
