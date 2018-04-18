@@ -29,6 +29,7 @@ import android.widget.ListView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -92,6 +93,14 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         private URL createUrl(String stringUrl) {
             // Convert the string we start with into a URL
+            URL url = null;
+            try {
+                url = new URL(stringUrl);
+            } catch (MalformedURLException e) {
+                Log.v(LOG_TAG, "Error creating the URL");
+                return null;
+            }
+            return url;
         }
 
         private String makeHttpRequest(URL url) throws IOException {
