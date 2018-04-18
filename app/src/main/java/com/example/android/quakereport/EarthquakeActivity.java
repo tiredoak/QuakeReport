@@ -18,12 +18,16 @@ package com.example.android.quakereport;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
@@ -60,4 +64,52 @@ public class EarthquakeActivity extends AppCompatActivity {
         });
 
     }
+
+    private void updateUi(Earthquake earthquake) {
+        // Update the UI with the earthquake data we got from the API
+    }
+
+    private class GetDataAsync extends AsyncTask<URL, Void, Void> {
+
+        @Override
+        protected Void doInBackground(URL... urls) {
+            // Create URL object
+            URL url = urls[0];
+            // Perform HTTP request to the URL and receive a JSON response back
+            // Extract relevant fields from the JSON response and create an {@link Event} object
+            // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            // Update the UI
+        }
+
+        private URL createUrl(String stringUrl) {
+            // Convert the string we start with into a URL
+        }
+
+        private String makeHttpRequest(URL url) throws IOException {
+            // Setup the jsonResponse, urlConnection, inputStream
+            // Try to establish the connection
+            // If successful, get the input stream
+            // Convert input stream into a String
+            // Close the connection
+        }
+
+        private String readFromStream(InputStream inputStream) throws IOException {
+            // Use a string builder to gradually convert the JSON response to a String
+            // Create an InputStreamReader
+            // Create a BufferedReader
+            // Append the lines that we read from the buffer
+        }
+
+        private Earthquake extractEartquakeFromJson(String jsonResponse) {
+            // Parse the JSON response and create the list of earthquakes
+        }
+
+    }
+
 }
