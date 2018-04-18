@@ -35,8 +35,10 @@ public class EarthquakeAdapter extends ArrayAdapter {
             listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
         }
 
+        // Grab the current earthquake being used
         Earthquake currentEarthquake = (Earthquake) getItem(position);
 
+        // Set the magnitude in the UI, after formatting it correctly
         TextView magTextView = (TextView) listItemView.findViewById(R.id.mag_text_view);
         String mag = formatMagnitude(currentEarthquake.getmMag());
         magTextView.setText(mag);
@@ -47,12 +49,15 @@ public class EarthquakeAdapter extends ArrayAdapter {
         String locationOffset = getLocationOffset(rawString);
         String primaryLocation = getPrimaryLocation(rawString);
 
+        // Set location strings in the UI
         TextView locationOffsetTextView = (TextView) listItemView.findViewById(R.id.location_offset_text_view);
         locationOffsetTextView.setText(locationOffset);
 
         TextView primaryLocationTextView = (TextView) listItemView.findViewById(R.id.primary_location_text_view);
         primaryLocationTextView.setText(primaryLocation);
 
+        // Set the date in the UI, after formatting it correctly
+        // Date is split in date and time for the UI
         Date dateObject = new Date(currentEarthquake.getmDate());
 
         TextView dateTextView = (TextView) listItemView.findViewById(R.id.date_text_view);
