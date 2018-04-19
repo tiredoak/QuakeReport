@@ -26,8 +26,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -152,9 +154,22 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         private String readFromStream(InputStream inputStream) throws IOException {
             // Use a string builder to gradually convert the JSON response to a String
-            // Create an InputStreamReader
-            // Create a BufferedReader
-            // Append the lines that we read from the buffer
+            StringBuilder jsonResponse = new StringBuilder();
+            if (inputStream != null) {
+                // InputStreamReader converts the bytes read by the InputStream into char
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                // BufferedReader adds buffering capabilities, speeding up the process
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                // readLine() returns everything until the line break
+                // if there is nothing it returns null
+                String line = reader.readLine();
+                while (line != null) {
+                    // gradually build the string with the json response
+                    jsonResponse.append(line);
+                    line = reader.readLine();
+                }
+            }
+            return jsonResponse.toString();
         }
 
         private Earthquake extractEartquakeFromJson(String jsonResponse) {
