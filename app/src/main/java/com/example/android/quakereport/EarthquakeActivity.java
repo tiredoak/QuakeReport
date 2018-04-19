@@ -16,9 +16,12 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +36,7 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,12 +57,17 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
 
     private TextView mEmptyStateView;
 
+    private TextView mNoConnectivityTextView;
+
     private EarthquakeAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view);
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
 
         // Get a list of earthquake locations.
         List<Earthquake> earthquakes = new ArrayList<>();
@@ -88,15 +97,26 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        //EarthquakeAsyncTask task = new EarthquakeAsyncTask();
-        //task.execute(USGS_REQUEST_URL);
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        getLoaderManager().initLoader(0, null, this);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
 
+        if (isConnected) {
+            getLoaderManager().initLoader(0, null, this);
+        } else {
+            mNoConnectivityTextView = (TextView) findViewById(R.id.no_internet_view);
+            mNoConnectivityTextView.setText(R.string.no_connectivity);
+            earthquakeListView.setEmptyView(mNoConnectivityTextView);
+        }
     }
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
         EarthquakeLoader loader = new EarthquakeLoader(this, USGS_REQUEST_URL);
         return loader;
     }
