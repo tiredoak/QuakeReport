@@ -17,6 +17,10 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
 
     @Override
     public List<Earthquake> loadInBackground() {
+        if (mUrl == null || mUrl == "") {
+            return null;
+        }
+
         List<Earthquake> earthquakes = null;
         try {
             earthquakes = QueryUtils.fetchEarthquakeData(mUrl);
