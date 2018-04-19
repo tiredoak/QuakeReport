@@ -19,9 +19,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EarthquakeAdapter extends ArrayAdapter {
-    public EarthquakeAdapter(Context context, ArrayList<Earthquake> earthquakes) {
+    public EarthquakeAdapter(Context context, List<Earthquake> earthquakes) {
         super(context, 0, earthquakes);
     }
 
@@ -45,7 +46,7 @@ public class EarthquakeAdapter extends ArrayAdapter {
 
         // Split location String into two separate strings, one for location offset and one
         // for the primary location
-        String rawString = currentEarthquake.getmCity();
+        String rawString = currentEarthquake.getmPlace();
         String locationOffset = getLocationOffset(rawString);
         String primaryLocation = getPrimaryLocation(rawString);
 

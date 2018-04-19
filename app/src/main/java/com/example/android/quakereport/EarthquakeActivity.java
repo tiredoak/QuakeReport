@@ -45,20 +45,24 @@ public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
+    private static String USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+
+    private EarthquakeAdapter mAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_view);
 
-        // Create a fake list of earthquake locations.
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        // Get a list of earthquake locations.
+        List<Earthquake> earthquakes = new ArrayList<>();
 
         // Set the adapter on the {@link ListView}
-        EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakes);
+        mAdapter = new EarthquakeAdapter(this, earthquakes);
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
-        earthquakeListView.setAdapter(adapter);
+        earthquakeListView.setAdapter(mAdapter);
 
         // Click listener to launch the browser to the URL showing more
         // information regarding the earthquake
@@ -74,130 +78,35 @@ public class EarthquakeActivity extends AppCompatActivity {
             }
         });
 
+        EarthquakeAsyncTask task = new EarthquakeAsyncTask();
+        task.execute(USGS_REQUEST_URL);
+
     }
 
-    private void updateUi(Earthquake earthquake) {
-        // Update the UI with the earthquake data we got from the API
-    }
-
-    private class GetDataAsync extends AsyncTask<URL, Void, Void> {
+    private class EarthquakeAsyncTask extends AsyncTask<String, Void, List<Earthquake>> {
 
         @Override
-        protected Void doInBackground(URL... urls) {
-            // Create URL object
-            URL url = urls[0];
-            // Perform HTTP request to the URL and receive a JSON response back
-
-            // Extract relevant fields from the JSON response and create an {@link Event} object
-            // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            // Update the UI
-        }
-
-        private URL createUrl(String stringUrl) {
-            // Convert the string we start with into a URL
-            URL url = null;
-            try {
-                url = new URL(stringUrl);
-            } catch (MalformedURLException e) {
-                Log.v(LOG_TAG, "Error creating the URL");
+        protected List doInBackground(String... urls) {
+            if (urls.length < 1 || urls[0] == null) {
                 return null;
             }
-            return url;
-        }
-
-        private String makeHttpRequest(URL url) throws IOException {
-            // Setup the jsonResponse, urlConnection, inputStream
-            String jsonResponse = "";
-            HttpURLConnection urlConnection = null;
-            InputStream inputStream = null;
-            // Check if URL exists before anything else
-            if (url == null) {
-                return jsonResponse;
-            }
-            // Connection code
-            // Set up the request object
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setReadTimeout(10000); // milliseconds
-            urlConnection.setConnectTimeout(15000); // milliseconds
+            List<Earthquake> earthquakes = null;
             try {
-                // And attempt the connection
-                urlConnection.connect();
-                // If successful, get the input stream
-                switch (urlConnection.getResponseCode()) {
-                    case 200:
-                        Log.v(LOG_TAG, "200 response from server");
-                        // get the input stream
-                        inputStream = urlConnection.getInputStream();
-                        // convert the stream of bytes to a String
-                        jsonResponse = readFromStream(inputStream);
-                        break;
-                    case 404:
-                        Log.v(LOG_TAG, "404 response from server");
-                        break;
-                    default:
-                        jsonResponse = "";
-                        break;
-                }
+                earthquakes = QueryUtils.fetchEarthquakeData(urls[0]);
             } catch (IOException e) {
-                Log.v(LOG_TAG, "Failure to establish the connection");
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
+                e.printStackTrace();
             }
-            return jsonResponse;
+            return earthquakes;
         }
 
-        private String readFromStream(InputStream inputStream) throws IOException {
-            // Use a string builder to gradually convert the JSON response to a String
-            StringBuilder jsonResponse = new StringBuilder();
-            if (inputStream != null) {
-                // InputStreamReader converts the bytes read by the InputStream into char
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                // BufferedReader adds buffering capabilities, speeding up the process
-                BufferedReader reader = new BufferedReader(inputStreamReader);
-                // readLine() returns everything until the line break
-                // if there is nothing it returns null
-                String line = reader.readLine();
-                while (line != null) {
-                    // gradually build the string with the json response
-                    jsonResponse.append(line);
-                    line = reader.readLine();
-                }
+        @Override
+        protected void onPostExecute(List<Earthquake> earthquakes) {
+            super.onPostExecute(earthquakes);
+            // Update the UI
+            mAdapter.clear();
+            if (earthquakes != null && !earthquakes.isEmpty()) {
+                mAdapter.addAll(earthquakes);
             }
-            return jsonResponse.toString();
         }
-
-
-        private ArrayList extractEartquakeFromJson(String jsonResponse) throws JSONException {
-            // Parse the JSON response and create the list of earthquakes
-            JSONObject raw = new JSONObject(jsonResponse);
-            JSONArray earthquakes = raw.getJSONArray("features");
-            // Set up List for the response
-            ArrayList parsedEarthquakes = new ArrayList<Earthquake>();
-            // Loop through response to build earthquake objects
-            for (int i = 0; i < earthquakes.length(); i++) {
-                JSONObject properties = (JSONObject) earthquakes.get(i);
-                double mag = properties.getDouble("mag");
-                String place = properties.getString("place");
-                Long time = properties.getLong("time");
-                String url = properties.getString("url");
-                Earthquake parsedEarthquake = new Earthquake(mag, place, time, url);
-                parsedEarthquakes.add(parsedEarthquake);
-            }
-            return parsedEarthquakes;
-        }
-
     }
-
 }

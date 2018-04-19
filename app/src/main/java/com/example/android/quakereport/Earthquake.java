@@ -8,13 +8,13 @@ package com.example.android.quakereport;
  * */
 public class Earthquake {
     private double mMag;
-    private String mCity;
+    private String mPlace;
     private long mDate;
     private String mUrl;
 
-    public Earthquake(double mag, String city, long date, String url) {
+    public Earthquake(double mag, String place, long date, String url) {
         mMag = mag;
-        mCity = city;
+        mPlace = place;
         mDate = date;
         mUrl = url;
     }
@@ -23,8 +23,8 @@ public class Earthquake {
         return mDate;
     }
 
-    public String getmCity() {
-        return mCity;
+    public String getmPlace() {
+        return mPlace;
     }
 
     public double getmMag() {
