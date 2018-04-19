@@ -60,6 +60,7 @@ public class EarthquakeAdapter extends ArrayAdapter {
         // Set the date in the UI, after formatting it correctly
         // Date is split in date and time for the UI
         Date dateObject = new Date(currentEarthquake.getmDate());
+        Log.v("earthquakeAdapter", currentEarthquake.toString());
 
         TextView dateTextView = (TextView) listItemView.findViewById(R.id.date_text_view);
         String date = formatDate(dateObject);
@@ -83,7 +84,7 @@ public class EarthquakeAdapter extends ArrayAdapter {
     }
 
     private String formatDate(Date date) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy");
         return dateFormatter.format(date);
     }
 
