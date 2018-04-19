@@ -26,6 +26,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +39,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
@@ -82,6 +87,7 @@ public class EarthquakeActivity extends AppCompatActivity {
             // Create URL object
             URL url = urls[0];
             // Perform HTTP request to the URL and receive a JSON response back
+
             // Extract relevant fields from the JSON response and create an {@link Event} object
             // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
             return null;
@@ -139,7 +145,7 @@ public class EarthquakeActivity extends AppCompatActivity {
                         jsonResponse = "";
                         break;
                 }
-            } catch (IOException) {
+            } catch (IOException e) {
                 Log.v(LOG_TAG, "Failure to establish the connection");
             } finally {
                 if (urlConnection != null) {
@@ -172,8 +178,24 @@ public class EarthquakeActivity extends AppCompatActivity {
             return jsonResponse.toString();
         }
 
-        private Earthquake extractEartquakeFromJson(String jsonResponse) {
+
+        private ArrayList extractEartquakeFromJson(String jsonResponse) throws JSONException {
             // Parse the JSON response and create the list of earthquakes
+            JSONObject raw = new JSONObject(jsonResponse);
+            JSONArray earthquakes = raw.getJSONArray("features");
+            // Set up List for the response
+            ArrayList parsedEarthquakes = new ArrayList<Earthquake>();
+            // Loop through response to build earthquake objects
+            for (int i = 0; i < earthquakes.length(); i++) {
+                JSONObject properties = (JSONObject) earthquakes.get(i);
+                double mag = properties.getDouble("mag");
+                String place = properties.getString("place");
+                Long time = properties.getLong("time");
+                String url = properties.getString("url");
+                Earthquake parsedEarthquake = new Earthquake(mag, place, time, url);
+                parsedEarthquakes.add(parsedEarthquake);
+            }
+            return parsedEarthquakes;
         }
 
     }
