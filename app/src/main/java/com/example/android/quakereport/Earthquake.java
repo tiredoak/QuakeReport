@@ -32,4 +32,12 @@ public class Earthquake {
     }
 
     public String getmUrl() { return mUrl; }
+
+    @Override
+    public String toString() {
+        return "mMag = " + mMag + "\n" +
+                "mPlace = " + mPlace + "\n" +
+                "mDate = " + mDate + "\n" +
+                "mUrl = " + mUrl + "\n";
+    }
 }
